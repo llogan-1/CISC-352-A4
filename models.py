@@ -27,6 +27,9 @@ class PerceptronModel(object):
         Returns: a node containing a single number (the score)
         """
         "*** YOUR CODE HERE ***"
+        dotprod = nn.DotProduct(self.get_weights(), point)
+        return dotprod
+
 
     def get_prediction(self, point):
         """
@@ -35,12 +38,31 @@ class PerceptronModel(object):
         Returns: -1 or 1
         """
         "*** YOUR CODE HERE ***"
+        dotprod = self.run(point)
+        c = nn.as_scalar(dotprod)
+        
+        if c >= 0: return 1
+        return -1
 
     def train_model(self, data):
         """
         Train the perceptron until convergence.
         """
         "*** YOUR CODE HERE ***"
+        # x are the datapoints, y are the corresponding values
+
+        while True:
+            complete = True
+            for x,y in data.iterate_once(1):
+                true = nn.as_scalar(y)
+                pred = self.get_prediction(x)
+                if true != pred:
+                    complete = False
+                    self.w.update(true, x)
+
+            if complete == True:
+                break
+        
 
 class RegressionModel(object):
     """
@@ -51,6 +73,19 @@ class RegressionModel(object):
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
+        hidden_size = 12
+        self.batches = 4
+        self.learning_rate = 0.01
+        # 1 layer
+        self.w1 = nn.Parameter(1, hidden_size)
+        self.b1 = nn.Parameter(1, hidden_size)
+        #layer 2
+        self.w2 = nn.Parameter(hidden_size,1)
+        self.b2 = nn.Parameter(1,1)
+
+        # lists of (layer,bias)
+        self.sets = [(self.w1, self.b1), (self.w2, self.b2)]
+
 
     def run(self, x):
         """
@@ -62,6 +97,12 @@ class RegressionModel(object):
             A node with shape (batch_size x 1) containing predicted y-values
         """
         "*** YOUR CODE HERE ***"
+        f = x
+        for w, b in self.sets:
+            z = nn.AddBias(b, nn.Linear(f, w))
+            f = nn.ReLU(z)
+        return z
+        
 
     def get_loss(self, x, y):
         """
@@ -74,12 +115,43 @@ class RegressionModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+        y_pred = self.run(x)
+        return nn.SquareLoss(y, y_pred)
 
     def train_model(self, data):
         """
         Trains the model.
         """
         "*** YOUR CODE HERE ***"
+
+        para = []
+        for pair in self.sets:
+            para.append(pair[0])
+            para.append(pair[1])
+        n = len(para)-1
+
+        while True:
+
+            for x,y in data.iterate_once(self.batches):
+                
+                loss = self.get_loss(x,y)
+                # list of gradient changes WRT to the parameters in order
+                grads = nn.gradients(para, loss)
+
+                if nn.as_scalar(loss) <= 0.02:
+                    break
+                
+                print("UPDATE")
+                for i in range(n):
+                    para[i].update(self.learning_rate, grads[i])
+                
+                
+
+
+
+
+
+
 
 class DigitClassificationModel(object):
     """
