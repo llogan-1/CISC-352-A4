@@ -1,0 +1,7 @@
+Here you'll write a very brief description of which group members worked on which part. If you worked alone, you should still indicate that you worked alone.
+
+
+Logan:
+
+changed the return of nn.as_scalar(score)
+to return float(node.data[0][0])
