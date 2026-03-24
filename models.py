@@ -128,22 +128,23 @@ class RegressionModel(object):
         for pair in self.sets:
             para.append(pair[0])
             para.append(pair[1])
-        n = len(para)-1
+        n = len(para)
 
         while True:
 
             for x,y in data.iterate_once(self.batches):
                 
                 loss = self.get_loss(x,y)
+                loss_val = nn.as_scalar(loss)
                 # list of gradient changes WRT to the parameters in order
                 grads = nn.gradients(para, loss)
 
-                if nn.as_scalar(loss) <= 0.02:
+                print(loss_val)
+                if loss_val <= 0.02:
                     break
                 
-                print("UPDATE")
                 for i in range(n):
-                    para[i].update(self.learning_rate, grads[i])
+                    para[i].update(-self.learning_rate, grads[i])
                 
                 
 
