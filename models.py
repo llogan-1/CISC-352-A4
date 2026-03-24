@@ -73,8 +73,8 @@ class RegressionModel(object):
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
-        hidden_size = 12
-        self.batches = 4
+        hidden_size = 400
+        self.batches = 10
         self.learning_rate = 0.01
         # 1 layer
         self.w1 = nn.Parameter(1, hidden_size)
@@ -130,7 +130,10 @@ class RegressionModel(object):
             para.append(pair[1])
         n = len(para)
 
-        while True:
+        running = True
+        while running:
+            
+            loss_val = 0
 
             for x,y in data.iterate_once(self.batches):
                 
@@ -139,12 +142,13 @@ class RegressionModel(object):
                 # list of gradient changes WRT to the parameters in order
                 grads = nn.gradients(para, loss)
 
-                print(loss_val)
-                if loss_val <= 0.02:
-                    break
-                
                 for i in range(n):
                     para[i].update(-self.learning_rate, grads[i])
+            
+            if loss_val <= 0.001:
+                    running = False
+                
+
                 
                 
 
