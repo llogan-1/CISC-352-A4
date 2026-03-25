@@ -1,4 +1,5 @@
 import nn
+import backend
 
 class PerceptronModel(object):
     def __init__(self, dimension):
@@ -73,8 +74,8 @@ class RegressionModel(object):
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
-        hidden_size = 400
-        self.batches = 10
+        hidden_size = 300
+        self.batches = 100
         self.learning_rate = 0.01
         # 1 layer
         self.w1 = nn.Parameter(1, hidden_size)
@@ -175,6 +176,18 @@ class DigitClassificationModel(object):
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
+        hidden_size = 300
+        self.batches = 100
+        self.learning_rate = 0.1
+        # 1 layer
+        self.w1 = nn.Parameter(784, hidden_size)
+        self.b1 = nn.Parameter(1, hidden_size)
+        #layer 2
+        self.w2 = nn.Parameter(hidden_size,10)
+        self.b2 = nn.Parameter(1,10)
+
+        # lists of (layer,bias)
+        self.sets = [(self.w1, self.b1), (self.w2, self.b2)]
 
     def run(self, x):
         """
@@ -191,6 +204,13 @@ class DigitClassificationModel(object):
                 (also called logits)
         """
         "*** YOUR CODE HERE ***"
+        f = x
+        
+        z = nn.AddBias(self.sets[0][1], nn.Linear(f, self.sets[0][0]))
+        f = nn.ReLU(z)
+        z = nn.AddBias(self.sets[1][1], nn.Linear(f, self.sets[1][0]))
+
+        return z
 
     def get_loss(self, x, y):
         """
@@ -206,10 +226,38 @@ class DigitClassificationModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+        
+        y_pred = self.run(x)
+        return nn.SoftmaxLoss(y_pred, y)
 
     def train_model(self, data):
         """
         Trains the model.
         """
         "*** YOUR CODE HERE ***"
+
+        para = []
+        for pair in self.sets:
+            para.append(pair[0])
+            para.append(pair[1])
+        n = len(para)
+
+        running = True
+        while running:
+            
+            loss_val = 0
+
+            for x,y in data.iterate_once(self.batches):
+                
+                loss = self.get_loss(x,y)
+                loss_val = nn.as_scalar(loss)
+                # list of gradient changes WRT to the parameters in order
+                grads = nn.gradients(para, loss)
+
+                for i in range(n):
+                    para[i].update(-self.learning_rate, grads[i])
+
+            print(data.get_validation_accuracy())
+            if  data.get_validation_accuracy() >= 0.9775:
+                    running = False
 
