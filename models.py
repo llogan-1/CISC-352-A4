@@ -1,5 +1,4 @@
 import nn
-import backend
 
 class PerceptronModel(object):
     def __init__(self, dimension):
