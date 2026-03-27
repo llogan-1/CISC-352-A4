@@ -243,13 +243,10 @@ class DigitClassificationModel(object):
 
         running = True
         while running:
-            
-            loss_val = 0
 
             for x,y in data.iterate_once(self.batches):
                 
                 loss = self.get_loss(x,y)
-                loss_val = nn.as_scalar(loss)
                 # list of gradient changes WRT to the parameters in order
                 grads = nn.gradients(para, loss)
 
