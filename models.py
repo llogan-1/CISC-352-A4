@@ -74,7 +74,7 @@ class RegressionModel(object):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
         hidden_size = 300
-        self.batches = 100
+        self.batches = 20
         self.learning_rate = 0.01
         # 1 layer
         self.w1 = nn.Parameter(1, hidden_size)
@@ -176,7 +176,7 @@ class DigitClassificationModel(object):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
         hidden_size = 300
-        self.batches = 100
+        self.batches = 50
         self.learning_rate = 0.1
         # 1 layer
         self.w1 = nn.Parameter(784, hidden_size)
@@ -254,6 +254,6 @@ class DigitClassificationModel(object):
                     para[i].update(-self.learning_rate, grads[i])
 
             print(data.get_validation_accuracy())
-            if  data.get_validation_accuracy() >= 0.9775:
+            if  data.get_validation_accuracy() >= 0.977:
                     running = False
 
