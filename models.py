@@ -50,17 +50,25 @@ class PerceptronModel(object):
         """
         "*** YOUR CODE HERE ***"
         # x are the datapoints, y are the corresponding values
-
+        # Loop until the model makes no mistakes in a full pass over the data
         while True:
-            complete = True
-            for x,y in data.iterate_once(1):
+            complete = True  # Assume no mistakes this iteration
+            # Iterate through the dataset one example at a time
+            # x = input point, y = true label (+1 or -1)
+            for x, y in data.iterate_once(1):
+                # Convert label node to scalar value
                 true = nn.as_scalar(y)
+                # Get model prediction for current input
                 pred = self.get_prediction(x)
+                # If prediction is incorrect, update weights
                 if true != pred:
-                    complete = False
+                    complete = False  # Mark that we made a mistake this pass
+                    # Perceptron update rule:
+                    # w = w + (true_label * x)
+                    # This shifts weights toward correctly classifying this example
                     self.w.update(true, x)
-
-            if complete == True:
+            # If no mistakes were made in the entire pass, training is done
+            if complete:
                 break
         
 
