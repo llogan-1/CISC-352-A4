@@ -63,9 +63,6 @@ class PerceptronModel(object):
                 # If prediction is incorrect, update weights
                 if true != pred:
                     complete = False  # Mark that we made a mistake this pass
-                    # Perceptron update rule:
-                    # w = w + (true_label * x)
-                    # This shifts weights toward correctly classifying this example
                     self.w.update(true, x)
             # If no mistakes were made in the entire pass, training is done
             if complete:
