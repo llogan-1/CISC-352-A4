@@ -73,13 +73,17 @@ class RegressionModel(object):
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
+        # Hidden size
         hidden_size = 300
+        # Batch Size
         self.batches = 20
+        # Learning rate
         self.learning_rate = 0.01
-        # 1 layer
+
+        # Layer 1
         self.w1 = nn.Parameter(1, hidden_size)
         self.b1 = nn.Parameter(1, hidden_size)
-        #layer 2
+        # Layer 2
         self.w2 = nn.Parameter(hidden_size,1)
         self.b2 = nn.Parameter(1,1)
 
@@ -97,10 +101,16 @@ class RegressionModel(object):
             A node with shape (batch_size x 1) containing predicted y-values
         """
         "*** YOUR CODE HERE ***"
+        # Let f be equal to the input
         f = x
+        # For every weight and bias pair in the set of (layer, bias) pairs
+        # Let z equal to the bias(b) added to f transformed by the weight(w)
+        # Then let f be equal to ReLU(z)
         for w, b in self.sets:
             z = nn.AddBias(b, nn.Linear(f, w))
             f = nn.ReLU(z)
+
+        # return the result
         return z
         
 
@@ -115,7 +125,9 @@ class RegressionModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+        # Get the predicted y values by running on the input x
         y_pred = self.run(x)
+        # return the squared loss between the predicted and actual y values
         return nn.SquareLoss(y, y_pred)
 
     def train_model(self, data):
@@ -124,27 +136,36 @@ class RegressionModel(object):
         """
         "*** YOUR CODE HERE ***"
 
+        # Flatten the list of (weight, bias) pairs into a single list of parameters
         para = []
         for pair in self.sets:
             para.append(pair[0])
             para.append(pair[1])
+
+        # Total number of parameters
         n = len(para)
 
         running = True
         while running:
-            
-            loss_val = 0
 
+            # Set the loss value to zero
+            loss_val = 0
+            # Iterate through the dataset one batch at a time
             for x,y in data.iterate_once(self.batches):
-                
+
+                # Compute the loss for the current batch
                 loss = self.get_loss(x,y)
+                # Compute the loss as a scalar
                 loss_val = nn.as_scalar(loss)
-                # list of gradient changes WRT to the parameters in order
+                # Compute gradients of the loss with respect to each parameter
                 grads = nn.gradients(para, loss)
 
+                # Update each parameter using gradient descent
+                # param = param - learning_rate * gradient
                 for i in range(n):
                     para[i].update(-self.learning_rate, grads[i])
-            
+                    
+            # Stop training once the loss value is less than 0.001
             if loss_val <= 0.001:
                     running = False
                 
@@ -175,13 +196,17 @@ class DigitClassificationModel(object):
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
+        # Hidden size
         hidden_size = 300
+        # Batch Size
         self.batches = 50
+        # Learning rate
         self.learning_rate = 0.1
-        # 1 layer
+
+        # Layer 1
         self.w1 = nn.Parameter(784, hidden_size)
         self.b1 = nn.Parameter(1, hidden_size)
-        #layer 2
+        # Layer 2
         self.w2 = nn.Parameter(hidden_size,10)
         self.b2 = nn.Parameter(1,10)
 
@@ -203,12 +228,19 @@ class DigitClassificationModel(object):
                 (also called logits)
         """
         "*** YOUR CODE HERE ***"
+        # Let f be equal to the input
         f = x
-        
+
+        # Let z equal to the bias(b1) added to f transformed by the weight(w1),
+        # where w1 and b1 are the weight and bias of the first layer
         z = nn.AddBias(self.sets[0][1], nn.Linear(f, self.sets[0][0]))
+        # Let f be equal to ReLU(z)
         f = nn.ReLU(z)
+        # Let z equal to the bias(b2) added to f transformed by the weight(w2),
+        # where w2 and b2 are the weight and bias of the second layer
         z = nn.AddBias(self.sets[1][1], nn.Linear(f, self.sets[1][0]))
 
+        # return the result
         return z
 
     def get_loss(self, x, y):
@@ -225,8 +257,9 @@ class DigitClassificationModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
-        
+        # Get the predicted y values by running on the input x
         y_pred = self.run(x)
+        # return the Softmax loss between the predicted and actual y values
         return nn.SoftmaxLoss(y_pred, y)
 
     def train_model(self, data):
@@ -235,25 +268,32 @@ class DigitClassificationModel(object):
         """
         "*** YOUR CODE HERE ***"
 
+        # Flatten the list of (weight, bias) pairs into a single list of parameters
         para = []
         for pair in self.sets:
             para.append(pair[0])
             para.append(pair[1])
+
+        # Total number of parameters
         n = len(para)
 
         running = True
         while running:
-
+            
+            # Iterate through the dataset one batch at a time
             for x,y in data.iterate_once(self.batches):
-                
+
+                # Compute the loss for the current batch
                 loss = self.get_loss(x,y)
-                # list of gradient changes WRT to the parameters in order
+                # Compute gradients of the loss with respect to each parameter
                 grads = nn.gradients(para, loss)
 
+                # Update each parameter using gradient descent
+                # param = param - learning_rate * gradient
                 for i in range(n):
                     para[i].update(-self.learning_rate, grads[i])
 
-            print(data.get_validation_accuracy())
+            # Stop training once the validation accuracy is greater than %97.7
             if  data.get_validation_accuracy() >= 0.977:
                     running = False
 
