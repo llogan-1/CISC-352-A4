@@ -114,6 +114,7 @@ class RegressionModel(object):
         for w, b in self.sets:
             z = nn.AddBias(b, nn.Linear(f, w))
             f = nn.ReLU(z)
+            print(f.data)
 
         # return the result
         return z
@@ -153,15 +154,23 @@ class RegressionModel(object):
         running = True
         while running:
 
-            # Set the loss value to zero
-            loss_val = 0
+            # NEW: Average the loss
+            avg_loss = 0
+            count = 0
             # Iterate through the dataset one batch at a time
             for x,y in data.iterate_once(self.batches):
+
+                # we didn't take the average loss. we only ever consider the final data point.
 
                 # Compute the loss for the current batch
                 loss = self.get_loss(x,y)
                 # Compute the loss as a scalar
                 loss_val = nn.as_scalar(loss)
+
+                # NEW: Average the loss
+                count += 1
+                avg_loss += loss_val
+
                 # Compute gradients of the loss with respect to each parameter
                 grads = nn.gradients(para, loss)
 
@@ -170,19 +179,10 @@ class RegressionModel(object):
                 for i in range(n):
                     para[i].update(-self.learning_rate, grads[i])
                     
-            # Stop training once the loss value is less than 0.001
-            if loss_val <= 0.001:
+            # NEW: Stop training when our average loss per epoch is less than .02
+            if (avg_loss/count) <= 0.02:
                     running = False
                 
-
-                
-                
-
-
-
-
-
-
 
 class DigitClassificationModel(object):
     """
