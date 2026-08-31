@@ -26,7 +26,6 @@ class PerceptronModel(object):
             point: a node with shape (1 x dimensions)
         Returns: a node containing a single number (the score)
         """
-        "*** YOUR CODE HERE ***"
         dotprod = nn.DotProduct(self.get_weights(), point)
         return dotprod
 
@@ -37,7 +36,6 @@ class PerceptronModel(object):
 
         Returns: -1 or 1
         """
-        "*** YOUR CODE HERE ***"
         dotprod = self.run(point)
         c = nn.as_scalar(dotprod)
         
@@ -48,7 +46,6 @@ class PerceptronModel(object):
         """
         Train the perceptron until convergence.
         """
-        "*** YOUR CODE HERE ***"
         # x are the datapoints, y are the corresponding values
         # Loop until the model makes no mistakes in a full pass over the data
         while True:
@@ -77,7 +74,6 @@ class RegressionModel(object):
     """
     def __init__(self):
         # Initialize your model parameters here
-        "*** YOUR CODE HERE ***"
         # Hidden size
         hidden_size = 300
         # Batch Size
@@ -105,7 +101,6 @@ class RegressionModel(object):
         Returns:
             A node with shape (batch_size x 1) containing predicted y-values
         """
-        "*** YOUR CODE HERE ***"
         # Let f be equal to the input
         f = x
         # For every weight and bias pair in the set of (layer, bias) pairs
@@ -130,7 +125,6 @@ class RegressionModel(object):
                 to be used for training
         Returns: a loss node
         """
-        "*** YOUR CODE HERE ***"
         # Get the predicted y values by running on the input x
         y_pred = self.run(x)
         # return the squared loss between the predicted and actual y values
@@ -140,7 +134,6 @@ class RegressionModel(object):
         """
         Trains the model.
         """
-        "*** YOUR CODE HERE ***"
 
         # Flatten the list of (weight, bias) pairs into a single list of parameters
         para = []
@@ -200,7 +193,6 @@ class DigitClassificationModel(object):
     """
     def __init__(self):
         # Initialize your model parameters here
-        "*** YOUR CODE HERE ***"
         # Hidden size
         hidden_size = 300
         # Batch Size
@@ -232,7 +224,6 @@ class DigitClassificationModel(object):
             A node with shape (batch_size x 10) containing predicted scores
                 (also called logits)
         """
-        "*** YOUR CODE HERE ***"
         # Let f be equal to the input
         f = x
 
@@ -261,7 +252,6 @@ class DigitClassificationModel(object):
             y: a node with shape (batch_size x 10)
         Returns: a loss node
         """
-        "*** YOUR CODE HERE ***"
         # Get the predicted y values by running on the input x
         y_pred = self.run(x)
         # return the Softmax loss between the predicted and actual y values
@@ -271,7 +261,6 @@ class DigitClassificationModel(object):
         """
         Trains the model.
         """
-        "*** YOUR CODE HERE ***"
 
         # Flatten the list of (weight, bias) pairs into a single list of parameters
         para = []

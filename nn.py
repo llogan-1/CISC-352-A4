@@ -389,4 +389,4 @@ def as_scalar(node):
     assert node.data.size == 1, (
         "Node has shape {}, cannot convert to a scalar".format(
             format_shape(node.data.shape)))
-    return float(node.data)
+    return float(node.data[0][0])
